@@ -51,6 +51,7 @@ fun SettingsScreen(
     settingsRepository: SettingsRepository,
     chatRepository: NanoChatRepository,
     onBack: () -> Unit,
+    onNavigateToPresetList: () -> Unit = {},
     viewModel: SettingsViewModel = viewModel(
         factory = SettingsViewModel.Factory(settingsRepository, chatRepository)
     )
@@ -178,6 +179,21 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.padding(top = 4.dp)
             )
+            Text(
+                text = "プリセット未指定のチャットに適用されます",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.padding(top = 4.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedButton(
+                onClick = onNavigateToPresetList,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("プリセット管理")
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

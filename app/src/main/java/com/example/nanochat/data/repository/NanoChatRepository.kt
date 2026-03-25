@@ -10,6 +10,7 @@ import com.example.nanochat.data.local.ConversationDao
 import com.example.nanochat.data.local.ConversationEntity
 import com.example.nanochat.data.local.MessageDao
 import com.example.nanochat.data.local.MessageEntity
+import com.example.nanochat.data.local.PresetEntity
 import com.example.nanochat.data.model.BulletCount
 import com.example.nanochat.data.model.SummarizeConfig
 import com.example.nanochat.util.ProcessedAttachment
@@ -75,6 +76,17 @@ class NanoChatRepository(
 
     suspend fun createConversation(title: String): Long {
         val conversation = ConversationEntity(title = title)
+        return conversationDao.insert(conversation)
+    }
+
+    suspend fun createConversationWithPreset(title: String, preset: PresetEntity): Long {
+        val conversation = ConversationEntity(
+            title = title,
+            presetId = preset.id,
+            presetEmoji = preset.emoji,
+            presetName = preset.name,
+            systemPrompt = preset.systemPrompt
+        )
         return conversationDao.insert(conversation)
     }
 
@@ -261,6 +273,14 @@ class NanoChatRepository(
         }
     }
 
+    // ── System prompt resolution ──
+
+    private suspend fun resolveSystemPrompt(conversationId: Long): String {
+        val conversation = conversationDao.getConversationById(conversationId)
+        return conversation?.systemPrompt
+            ?: settingsRepository.systemPrompt.first()
+    }
+
     // ── Context building (4k token constraint) ──
 
     data class ContextBuildResult(
@@ -272,7 +292,7 @@ class NanoChatRepository(
         conversationId: Long,
         upToMessageId: Long? = null
     ): ContextBuildResult {
-        val systemPrompt = settingsRepository.systemPrompt.first()
+        val systemPrompt = resolveSystemPrompt(conversationId)
         val maxTokens = settingsRepository.contextWindowSize.first()
         var activePath = getActivePathMessages(conversationId)
 

@@ -240,7 +240,14 @@ fun ChatScreen(
                 title = {
                     Column {
                         Text(
-                            text = uiState.conversation?.title ?: "Chat",
+                            text = run {
+                                val conv = uiState.conversation
+                                if (conv?.presetEmoji != null && conv.presetName != null) {
+                                    "${conv.presetEmoji} ${conv.presetName}"
+                                } else {
+                                    conv?.title ?: "Chat"
+                                }
+                            },
                             maxLines = 1
                         )
                         Text(
