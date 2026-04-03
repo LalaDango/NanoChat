@@ -86,10 +86,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nanochat.data.local.MessageEntity
 import com.example.nanochat.data.repository.NanoChatRepository
 import com.example.nanochat.data.repository.SettingsRepository
-import com.example.nanochat.ui.theme.AssistantMessageBg
-import com.example.nanochat.ui.theme.SummarizedAssistantMessageBg
-import com.example.nanochat.ui.theme.SummarizedUserMessageBg
-import com.example.nanochat.ui.theme.UserMessageBg
 import com.example.nanochat.util.FileProcessor
 import com.example.nanochat.util.ProcessedAttachment
 import kotlinx.coroutines.launch
@@ -412,7 +408,7 @@ private fun StreamingMessageBubble(content: String) {
             modifier = Modifier
                 .widthIn(max = 340.dp)
                 .background(
-                    color = AssistantMessageBg,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(
                         topStart = 16.dp,
                         topEnd = 16.dp,
@@ -421,7 +417,7 @@ private fun StreamingMessageBubble(content: String) {
                     )
                 )
         ) {
-            val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+            val textColor = MaterialTheme.colorScheme.onSurfaceVariant.toArgb()
 
             Column(modifier = Modifier.padding(12.dp)) {
                 SelectableText(
@@ -498,9 +494,11 @@ private fun MessageBubble(
     }
 
     val bgColor = if (message.isSummarized) {
-        if (isUser) SummarizedUserMessageBg else SummarizedAssistantMessageBg
+        if (isUser) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
     } else {
-        if (isUser) UserMessageBg else AssistantMessageBg
+        if (isUser) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant
     }
 
     // Alpha: manual exclude or auto-trim (out of context)
@@ -530,7 +528,11 @@ private fun MessageBubble(
                         )
                     )
             ) {
-                val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                val textColor = if (isUser) {
+                    MaterialTheme.colorScheme.onPrimaryContainer.toArgb()
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant.toArgb()
+                }
 
                 Column(
                     modifier = Modifier.padding(12.dp)
@@ -713,7 +715,7 @@ private fun EditableMessageBubble(
             modifier = Modifier
                 .widthIn(max = 340.dp)
                 .background(
-                    color = UserMessageBg,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {
